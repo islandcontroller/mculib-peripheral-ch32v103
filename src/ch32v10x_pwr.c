@@ -151,6 +151,10 @@ void PWR_EnterSTOPMode(uint32_t PWR_Regulator, uint8_t PWR_STOPEntry)
     }
     else
     {
+        // clear if event flag is already set
+        __SEV();
+        __WFE();
+
         __WFE();
     }
 

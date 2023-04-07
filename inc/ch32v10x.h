@@ -299,6 +299,15 @@ typedef struct
     __IO uint16_t WRPR3;
 } OB_TypeDef;
 
+/* Vendor Data */
+typedef struct
+{
+         uint32_t RESERVED1[6];
+    __I  uint16_t TSCALV; /*!< Temp Sensor Calibration Voltage (mV)           */
+    __I  uint16_t TSCALT; /*!< Temp Sensor Calibration Temperature (degC)     */
+         uint32_t RESERVED2[25];
+} VEND_TypeDef;
+
 /* General Purpose I/O */
 typedef struct
 {
@@ -501,6 +510,14 @@ typedef struct
     __IO uint32_t EXTEN_CTR;
 } EXTEN_TypeDef;
 
+/* Electronic Signature */
+typedef struct
+{
+    __I  uint16_t FLACAP; /*!< FLASH Capacity in kB                           */
+         uint16_t RESERVED[3];
+    __I  uint32_t UID[3]; /*!< Unique Device ID                               */
+} ESIG_TypeDef;
+
 /* Peripheral memory map */
 #define FLASH_BASE                              ((uint32_t)0x08000000) /* FLASH base address in the alias region */
 #define SRAM_BASE                               ((uint32_t)0x20000000) /* SRAM base address in the alias region */
@@ -576,8 +593,10 @@ typedef struct
 
 #define FLASH_R_BASE                            (AHBPERIPH_BASE + 0x2000) /* Flash registers base address */
 #define OB_BASE                                 ((uint32_t)0x1FFFF800)    /* Flash Option Bytes base address */
+#define VEND_BASE                               ((uint32_t)0x1FFFF880)    /* Vendor Option Bytes base address */
 #define DBGMCU_BASE                             ((uint32_t)0xE000D000)
 #define EXTEN_BASE                              ((uint32_t)0x40023800)
+#define ESIG_BASE                               ((uint32_t)0x1FFFF7E0)    /* Electronic Signature */
 
 /* Peripheral declaration */
 #define TIM2                                    ((TIM_TypeDef *)TIM2_BASE)
@@ -643,6 +662,8 @@ typedef struct
 #define CRC                                     ((CRC_TypeDef *)CRC_BASE)
 #define FLASH                                   ((FLASH_TypeDef *)FLASH_R_BASE)
 #define OB                                      ((OB_TypeDef *)OB_BASE)
+#define VEND                                    ((VEND_TypeDef *)VEND_BASE)
+#define ESIG                                    ((ESIG_TypeDef *)ESIG_BASE)
 #define DBGMCU                                  ((DBGMCU_TypeDef *)DBGMCU_BASE)
 #define EXTEN                                   ((EXTEN_TypeDef *)EXTEN_BASE)
 

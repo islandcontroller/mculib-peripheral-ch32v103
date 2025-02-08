@@ -64,7 +64,8 @@ static __I uint8_t ADCPrescTable[4] = {2, 4, 6, 8};
  * @fn      RCC_DeInit
  *
  * @brief   Resets the RCC clock configuration to the default reset state.
- *
+ *          Note-
+ *          HSE can not be stopped if it is used directly or through the PLL as system clock.
  * @return  none
  */
 void RCC_DeInit(void)
@@ -86,7 +87,8 @@ void RCC_DeInit(void)
  *            RCC_HSE_OFF - HSE oscillator OFF.
  *            RCC_HSE_ON - HSE oscillator ON.
  *            RCC_HSE_Bypass - HSE oscillator bypassed with external clock.
- *
+ *            Note-
+ *            HSE can not be stopped if it is used directly or through the PLL as system clock.
  * @return  none
  */
 void RCC_HSEConfig(uint32_t RCC_HSE)
@@ -214,6 +216,8 @@ void RCC_PLLConfig(uint32_t RCC_PLLSource, uint32_t RCC_PLLMul)
  * @fn      RCC_PLLCmd
  *
  * @brief   Enables or disables the PLL.
+ *          Note-The PLL can not be disabled if it is used as system clock.
+ *          
  *
  * @param   NewState - ENABLE or DISABLE.
  *
@@ -328,11 +332,11 @@ void RCC_PCLK1Config(uint32_t RCC_HCLK)
  *
  * @param   RCC_HCLK - defines the APB2 clock divider. This clock is derived from
  *        the AHB clock (HCLK).
- *            RCC_HCLK_Div1 - APB1 clock = HCLK.
- *            RCC_HCLK_Div2 - APB1 clock = HCLK/2.
- *            RCC_HCLK_Div4 - APB1 clock = HCLK/4.
- *            RCC_HCLK_Div8 - APB1 clock = HCLK/8.
- *            RCC_HCLK_Div16 - APB1 clock = HCLK/16.
+ *            RCC_HCLK_Div1 - APB2 clock = HCLK.
+ *            RCC_HCLK_Div2 - APB2 clock = HCLK/2.
+ *            RCC_HCLK_Div4 - APB2 clock = HCLK/4.
+ *            RCC_HCLK_Div8 - APB2 clock = HCLK/8.
+ *            RCC_HCLK_Div16 - APB2 clock = HCLK/16.
  *
  * @return  none
  */
@@ -458,6 +462,8 @@ void RCC_LSEConfig(uint8_t RCC_LSE)
  * @fn      RCC_LSICmd
  *
  * @brief   Enables or disables the Internal Low Speed oscillator (LSI).
+ *          Note-
+ *          LSI can not be disabled if the IWDG is running.
  *
  * @param   NewState - ENABLE or DISABLE.
  *
@@ -484,7 +490,8 @@ void RCC_LSICmd(FunctionalState NewState)
  *            RCC_RTCCLKSource_LSE - LSE selected as RTC clock.
  *            RCC_RTCCLKSource_LSI - LSI selected as RTC clock.
  *            RCC_RTCCLKSource_HSE_Div128 - HSE clock divided by 128 selected as RTC clock.
- *
+ *         Note-   
+ *           Once the RTC clock is selected it can't be changed unless the Backup domain is reset.
  * @return  none
  */
 void RCC_RTCCLKConfig(uint32_t RCC_RTCCLKSource)
@@ -602,6 +609,8 @@ void RCC_GetClocksFreq(RCC_ClocksTypeDef *RCC_Clocks)
  *            RCC_AHBPeriph_DMA1.
  *            RCC_AHBPeriph_DMA2.
  *            RCC_AHBPeriph_SRAM.
+ *          Note-
+ *          SRAM  clock can be disabled only during sleep mode.
  *          NewState: ENABLE or DISABLE.
  *
  * @return  none
@@ -875,7 +884,9 @@ FlagStatus RCC_GetFlagStatus(uint8_t RCC_FLAG)
  * @fn      RCC_ClearFlag
  *
  * @brief   Clears the RCC reset flags.
- *
+ *          Note-   
+ *          The reset flags are: RCC_FLAG_PINRST, RCC_FLAG_PORRST, RCC_FLAG_SFTRST,
+ *          RCC_FLAG_IWDGRST, RCC_FLAG_WWDGRST, RCC_FLAG_LPWRRST
  * @return  none
  */
 void RCC_ClearFlag(void)

@@ -156,7 +156,8 @@ uint32_t RTC_GetDivider(void)
  * @fn      RTC_WaitForLastTask
  *
  * @brief   Waits until last write operation on RTC registers has finished
- *
+ *          Note-
+ *          This function must be called before any write to RTC registers.
  * @return  none
  */
 void RTC_WaitForLastTask(void)
@@ -170,7 +171,10 @@ void RTC_WaitForLastTask(void)
  * @fn      RTC_WaitForSynchro
  *
  * @brief   Waits until the RTC registers are synchronized with RTC APB clock
- *
+ *          Note-
+ *          This function must be called before any read operation after an APB reset
+ *          or an APB clock stop.
+ *          
  * @return  none
  */
 void RTC_WaitForSynchro(void)

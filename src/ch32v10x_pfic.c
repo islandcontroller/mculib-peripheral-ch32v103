@@ -9,91 +9,41 @@
  *********************************************************************************/
 #include "ch32v10x_pfic.h"
 
-__IO uint32_t PFIC_Priority_Group = 0;
-
-/*********************************************************************
- * @fn      PFIC_PriorityGroupConfig
- *
- * @brief   Configures the priority grouping - pre-emption priority and subpriority.
- *
- * @param   PFIC_PriorityGroup - specifies the priority grouping bits length.
- *            PFIC_PriorityGroup_0 - 0 bits for pre-emption priority
- *                                   4 bits for subpriority
- *            PFIC_PriorityGroup_1 - 1 bits for pre-emption priority
- *                                   3 bits for subpriority
- *            PFIC_PriorityGroup_2 - 2 bits for pre-emption priority
- *                                   2 bits for subpriority
- *            PFIC_PriorityGroup_3 - 3 bits for pre-emption priority
- *                                   1 bits for subpriority
- *            PFIC_PriorityGroup_4 - 4 bits for pre-emption priority
- *                                   0 bits for subpriority
- *
- * @return  none
- */
-void PFIC_PriorityGroupConfig(uint32_t PFIC_PriorityGroup)
-{
-    PFIC_Priority_Group = PFIC_PriorityGroup;
-}
-
 /*********************************************************************
  * @fn      PFIC_Init
  *
  * @brief   Initializes the PFIC peripheral according to the specified parameters in
  *        the PFIC_InitStruct.
  *
+ * @note see PFIC_Config for configuring interrupt nesting function.
+ * 
  * @param   PFIC_InitStruct - pointer to a PFIC_InitTypeDef structure that contains the
  *        configuration information for the specified PFIC peripheral.
+ *            interrupt nesting enabled:
+ *              PFIC_IRQChannelPreemptionPriority - range from 0 to 1.
+ *              PFIC_IRQChannelSubPriority - range from 0 to 7.
  *
+ *            interrupt nesting disabled:
+ *              PFIC_IRQChannelPreemptionPriority - range is 0.
+ *              PFIC_IRQChannelSubPriority - range from 0 to 0xF.
+ * @param   PFIC_PriorityGroup - specifies the priority grouping bits length.
+ *            PFIC_PriorityGroup_0: interrupt nesting disabled
+ *            PFIC_PriorityGroup_1: interrupt nesting enabled
+ * 
  * @return  none
  */
-void PFIC_Init(PFIC_InitTypeDef *PFIC_InitStruct)
+void PFIC_Init(PFIC_InitTypeDef *PFIC_InitStruct, uint32_t PFIC_PriorityGroup)
 {
-    uint8_t tmppre = 0;
-
-    if(PFIC_Priority_Group == PFIC_PriorityGroup_0)
+    if (PFIC_PriorityGroup == PFIC_PriorityGroup_0)
     {
-        PFIC_SetPriority(PFIC_InitStruct->PFIC_IRQChannel, PFIC_InitStruct->PFIC_IRQChannelSubPriority << 4);
+        uint8_t sub = PFIC_InitStruct->PFIC_IRQChannelSubPriority & 0xF;
+        PFIC_SetPriority(PFIC_InitStruct->PFIC_IRQChannel, (sub << 4));
     }
-    else if(PFIC_Priority_Group == PFIC_PriorityGroup_1)
+    else if (PFIC_PriorityGroup == PFIC_PriorityGroup_1)
     {
-        if(PFIC_InitStruct->PFIC_IRQChannelPreemptionPriority == 1)
-        {
-            PFIC_SetPriority(PFIC_InitStruct->PFIC_IRQChannel, (1 << 7) | (PFIC_InitStruct->PFIC_IRQChannelSubPriority << 4));
-        }
-        else
-        {
-            PFIC_SetPriority(PFIC_InitStruct->PFIC_IRQChannel, (0 << 7) | (PFIC_InitStruct->PFIC_IRQChannelSubPriority << 4));
-        }
-    }
-    else if(PFIC_Priority_Group == PFIC_PriorityGroup_2)
-    {
-        if(PFIC_InitStruct->PFIC_IRQChannelPreemptionPriority <= 1)
-        {
-            tmppre = PFIC_InitStruct->PFIC_IRQChannelSubPriority + (4 * PFIC_InitStruct->PFIC_IRQChannelPreemptionPriority);
-            PFIC_SetPriority(PFIC_InitStruct->PFIC_IRQChannel, (0 << 7) | (tmppre << 4));
-        }
-        else
-        {
-            tmppre = PFIC_InitStruct->PFIC_IRQChannelSubPriority + (4 * (PFIC_InitStruct->PFIC_IRQChannelPreemptionPriority - 2));
-            PFIC_SetPriority(PFIC_InitStruct->PFIC_IRQChannel, (1 << 7) | (tmppre << 4));
-        }
-    }
-    else if(PFIC_Priority_Group == PFIC_PriorityGroup_3)
-    {
-        if(PFIC_InitStruct->PFIC_IRQChannelPreemptionPriority <= 3)
-        {
-            tmppre = PFIC_InitStruct->PFIC_IRQChannelSubPriority + (2 * PFIC_InitStruct->PFIC_IRQChannelPreemptionPriority);
-            PFIC_SetPriority(PFIC_InitStruct->PFIC_IRQChannel, (0 << 7) | (tmppre << 4));
-        }
-        else
-        {
-            tmppre = PFIC_InitStruct->PFIC_IRQChannelSubPriority + (2 * (PFIC_InitStruct->PFIC_IRQChannelPreemptionPriority - 4));
-            PFIC_SetPriority(PFIC_InitStruct->PFIC_IRQChannel, (1 << 7) | (tmppre << 4));
-        }
-    }
-    else if(PFIC_Priority_Group == PFIC_PriorityGroup_4)
-    {
-        PFIC_SetPriority(PFIC_InitStruct->PFIC_IRQChannel, PFIC_InitStruct->PFIC_IRQChannelPreemptionPriority << 4);
+        uint8_t pre = PFIC_InitStruct->PFIC_IRQChannelPreemptionPriority & 0x1;
+        uint8_t sub = PFIC_InitStruct->PFIC_IRQChannelSubPriority & 0x7;
+        PFIC_SetPriority(PFIC_InitStruct->PFIC_IRQChannel, (pre << 7) | (sub << 4));
     }
 
     if(PFIC_InitStruct->PFIC_IRQChannelCmd != DISABLE)

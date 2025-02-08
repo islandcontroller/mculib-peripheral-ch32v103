@@ -112,7 +112,7 @@ typedef struct
 #define RCC_AHBPeriph_CRC                ((uint32_t)0x00000040)
 #define RCC_AHBPeriph_FSMC               ((uint32_t)0x00000100)
 #define RCC_AHBPeriph_SDIO               ((uint32_t)0x00000400)
-#define RCC_AHBPeriph_USBHD              ((uint32_t)0x00001000)
+#define RCC_AHBPeriph_USBFS              ((uint32_t)0x00001000)
 
 /* APB2_peripheral */
 #define RCC_APB2Periph_AFIO              ((uint32_t)0x00000001)
@@ -149,7 +149,6 @@ typedef struct
 #define RCC_APB1Periph_TIM14             ((uint32_t)0x00000100)
 #define RCC_APB1Periph_WWDG              ((uint32_t)0x00000800)
 #define RCC_APB1Periph_SPI2              ((uint32_t)0x00004000)
-#define RCC_APB1Periph_SPI3              ((uint32_t)0x00008000)
 #define RCC_APB1Periph_USART2            ((uint32_t)0x00020000)
 #define RCC_APB1Periph_USART3            ((uint32_t)0x00040000)
 #define RCC_APB1Periph_UART4             ((uint32_t)0x00080000)

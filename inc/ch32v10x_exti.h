@@ -68,7 +68,7 @@ typedef struct
 #define EXTI_Line16    ((uint32_t)0x10000) /* External interrupt line 16 Connected to the PVD Output */
 #define EXTI_Line17    ((uint32_t)0x20000) /* External interrupt line 17 Connected to the RTC Alarm event */
 #define EXTI_Line18    ((uint32_t)0x40000)
-#define EXTI_Line19    ((uint32_t)0x80000) /* External interrupt line 19 Connected to the USBHD Wakeup event */
+#define EXTI_Line19    ((uint32_t)0x80000) /* External interrupt line 19 Connected to the USBFS Wakeup event */
 
 void       EXTI_DeInit(void);
 void       EXTI_Init(EXTI_InitTypeDef *EXTI_InitStruct);

@@ -126,7 +126,7 @@ void BKP_RTCOutputConfig(uint16_t BKP_RTCOutputSource)
  * @brief   Sets RTC Clock Calibration value.
  *
  * @param   CalibrationValue - specifies the RTC Clock Calibration value.
- *            This parameter must be a number between 0 and 0x1F.
+ *            This parameter must be a number between 0 and 0x7F.
  *
  * @return  none
  */

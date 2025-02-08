@@ -28,15 +28,10 @@ typedef struct
  
 
 /* Preemption_Priority_Group */
-#define PFIC_PriorityGroup_0           ((uint32_t)0x00)
-#define PFIC_PriorityGroup_1           ((uint32_t)0x01)
-#define PFIC_PriorityGroup_2           ((uint32_t)0x02)
-#define PFIC_PriorityGroup_3           ((uint32_t)0x03)
-#define PFIC_PriorityGroup_4           ((uint32_t)0x04)
+#define PFIC_PriorityGroup_0           ((uint32_t)0x00) /* interrupt nesting disabled */
+#define PFIC_PriorityGroup_1           ((uint32_t)0x01) /* interrupt nesting enabled */
 
-
-void PFIC_PriorityGroupConfig(uint32_t PFIC_PriorityGroup);
-void PFIC_Init(PFIC_InitTypeDef* PFIC_InitStruct);
+void PFIC_Init(PFIC_InitTypeDef* PFIC_InitStruct, uint32_t PFIC_PriorityGroup);
 
 #ifdef __cplusplus
 }

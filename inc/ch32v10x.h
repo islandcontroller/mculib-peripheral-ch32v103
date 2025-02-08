@@ -17,12 +17,20 @@ extern "C" {
 #define __MPU_PRESENT             0  /* Other CH32 devices does not provide an MPU */
 #define __Vendor_SysTickConfig    0  /* Set to 1 if different SysTick Config is used */
 
+#ifndef HSE_VALUE
 #define HSE_VALUE                 ((uint32_t)8000000) /* Value of the External oscillator in Hz */
+#endif
 
 /* In the following line adjust the External High Speed oscillator (HSE) Startup Timeout value */
 #define HSE_STARTUP_TIMEOUT       ((uint16_t)0x500) /* Time out for HSE start up */
 
 #define HSI_VALUE                 ((uint32_t)8000000) /* Value of the Internal oscillator in Hz */
+
+/* CH32V10x Standard Peripheral Library version number */
+#define __CH32V10x_STDPERIPH_VERSION_MAIN   (0x02) /* [15:8] main version */
+#define __CH32V10x_STDPERIPH_VERSION_SUB    (0x07) /* [7:0] sub version */
+#define __CH32V10x_STDPERIPH_VERSION        ( (__CH32V10x_STDPERIPH_VERSION_MAIN << 8)\
+                                             |(__CH32V10x_STDPERIPH_VERSION_SUB << 0))
 
 /* Interrupt Number Definition, according to the selected device */
 typedef enum IRQn
@@ -30,7 +38,7 @@ typedef enum IRQn
     /******  RISC-V Processor Exceptions Numbers *******************************************************/
     NonMaskableInt_IRQn = 2, /* 2 Non Maskable Interrupt                             */
     EXC_IRQn = 3,            /* 4 Exception Interrupt                                */
-    SysTicK_IRQn = 12,       /* 12 System timer Interrupt                            */
+    SysTick_IRQn = 12,       /* 12 System timer Interrupt                            */
     Software_IRQn = 14,      /* 14 software Interrupt                                */
 
     /******  RISC-V specific Interrupt Numbers *********************************************************/
@@ -73,7 +81,7 @@ typedef enum IRQn
     EXTI15_10_IRQn = 56,     /* External Line[15:10] Interrupts                      */
     RTCAlarm_IRQn = 57,      /* RTC Alarm through EXTI Line Interrupt                */
     USBWakeUp_IRQn = 58,     /* USB WakeUp from suspend through EXTI Line Interrupt  */
-    USBHD_IRQn = 59,         /* USBHD Interrupt                                      */
+    USBFS_IRQn = 59,         /* USBFS Interrupt                                      */
 
 } IRQn_Type;
 
@@ -426,10 +434,10 @@ typedef struct
     uint16_t      RESERVED5;
     __IO uint16_t TCRCR;
     uint16_t      RESERVED6;
-    __IO uint16_t I2SCFGR;
-    uint16_t      RESERVED7;
-    __IO uint16_t I2SPR;
-    uint16_t      RESERVED8;
+    uint32_t      RESERVED7;
+    uint32_t      RESERVED8;
+    __IO uint16_t HSCR;
+    uint16_t      RESERVED9;
 } SPI_TypeDef;
 
 /* TIM */
@@ -540,7 +548,6 @@ typedef struct
 #define WWDG_BASE                               (APB1PERIPH_BASE + 0x2C00)
 #define IWDG_BASE                               (APB1PERIPH_BASE + 0x3000)
 #define SPI2_BASE                               (APB1PERIPH_BASE + 0x3800)
-#define SPI3_BASE                               (APB1PERIPH_BASE + 0x3C00)
 #define USART2_BASE                             (APB1PERIPH_BASE + 0x4400)
 #define USART3_BASE                             (APB1PERIPH_BASE + 0x4800)
 #define UART4_BASE                              (APB1PERIPH_BASE + 0x4C00)
@@ -612,7 +619,6 @@ typedef struct
 #define WWDG                                    ((WWDG_TypeDef *)WWDG_BASE)
 #define IWDG                                    ((IWDG_TypeDef *)IWDG_BASE)
 #define SPI2                                    ((SPI_TypeDef *)SPI2_BASE)
-#define SPI3                                    ((SPI_TypeDef *)SPI3_BASE)
 #define USART2                                  ((USART_TypeDef *)USART2_BASE)
 #define USART3                                  ((USART_TypeDef *)USART3_BASE)
 #define UART4                                   ((USART_TypeDef *)UART4_BASE)
@@ -2134,8 +2140,6 @@ typedef struct
 #define AFIO_PCFR1_SWJ_CFG_2                    ((uint32_t)0x04000000) /* Bit 2 */
 
 #define AFIO_PCFR1_SWJ_CFG_RESET                ((uint32_t)0x00000000) /* Full SWJ (JTAG-DP + SW-DP) : Reset State */
-#define AFIO_PCFR1_SWJ_CFG_NOJNTRST             ((uint32_t)0x01000000) /* Full SWJ (JTAG-DP + SW-DP) but without JNTRST */
-#define AFIO_PCFR1_SWJ_CFG_JTAGDISABLE          ((uint32_t)0x02000000) /* JTAG-DP Disabled and SW-DP Enabled */
 #define AFIO_PCFR1_SWJ_CFG_DISABLE              ((uint32_t)0x04000000) /* JTAG-DP Disabled and SW-DP Disabled */
 
 /*****************  Bit definition for AFIO_EXTICR1 register  *****************/
@@ -2419,14 +2423,14 @@ typedef struct
 #define PWR_CTLR_PLS_1                          ((uint16_t)0x0040) /* Bit 1 */
 #define PWR_CTLR_PLS_2                          ((uint16_t)0x0080) /* Bit 2 */
 
-#define PWR_CTLR_PLS_2V2                        ((uint16_t)0x0000) /* PVD level 2.2V */
-#define PWR_CTLR_PLS_2V3                        ((uint16_t)0x0020) /* PVD level 2.3V */
-#define PWR_CTLR_PLS_2V4                        ((uint16_t)0x0040) /* PVD level 2.4V */
-#define PWR_CTLR_PLS_2V5                        ((uint16_t)0x0060) /* PVD level 2.5V */
-#define PWR_CTLR_PLS_2V6                        ((uint16_t)0x0080) /* PVD level 2.6V */
-#define PWR_CTLR_PLS_2V7                        ((uint16_t)0x00A0) /* PVD level 2.7V */
-#define PWR_CTLR_PLS_2V8                        ((uint16_t)0x00C0) /* PVD level 2.8V */
-#define PWR_CTLR_PLS_2V9                        ((uint16_t)0x00E0) /* PVD level 2.9V */
+#define PWR_CTLR_PLS_MODE0                     ((uint16_t)0x0000) /* PVD threshold 2.65V rising / 2.50V falling */
+#define PWR_CTLR_PLS_MODE1                     ((uint16_t)0x0020) /* PVD threshold 2.87V rising / 2.70V falling */
+#define PWR_CTLR_PLS_MODE2                     ((uint16_t)0x0040) /* PVD threshold 3.07V rising / 2.89V falling */
+#define PWR_CTLR_PLS_MODE3                     ((uint16_t)0x0060) /* PVD threshold 3.27V rising / 3.08V falling */
+#define PWR_CTLR_PLS_MODE4                     ((uint16_t)0x0080) /* PVD threshold 3.46V rising / 3.27V falling */
+#define PWR_CTLR_PLS_MODE5                     ((uint16_t)0x00A0) /* PVD threshold 3.76V rising / 3.55V falling */
+#define PWR_CTLR_PLS_MODE6                     ((uint16_t)0x00C0) /* PVD threshold 4.07V rising / 3.84V falling */
+#define PWR_CTLR_PLS_MODE7                     ((uint16_t)0x00E0) /* PVD threshold 4.43V rising / 4.13V falling */
 
 #define PWR_CTLR_DBP                            ((uint16_t)0x0100) /* Disable Backup Domain write protection */
 
@@ -2592,8 +2596,6 @@ typedef struct
 #define RCC_TIM1RST                             ((uint32_t)0x00000800) /* TIM1 Timer reset */
 #define RCC_SPI1RST                             ((uint32_t)0x00001000) /* SPI 1 reset */
 #define RCC_USART1RST                           ((uint32_t)0x00004000) /* USART1 reset */
-
-#define RCC_IOPERST                             ((uint32_t)0x00000040) /* I/O port E reset */
 
 /*****************  Bit definition for RCC_APB1PRSTR register  *****************/
 #define RCC_TIM2RST                             ((uint32_t)0x00000001) /* Timer 2 reset */
@@ -2771,32 +2773,8 @@ typedef struct
 /******************  Bit definition for SPI_TCRCR register  ******************/
 #define SPI_TCRCR_TXCRC                         ((uint16_t)0xFFFF) /* Tx CRC Register */
 
-/******************  Bit definition for SPI_I2SCFGR register  *****************/
-#define SPI_I2SCFGR_CHLEN                       ((uint16_t)0x0001) /* Channel length (number of bits per audio channel) */
-
-#define SPI_I2SCFGR_DATLEN                      ((uint16_t)0x0006) /* DATLEN[1:0] bits (Data length to be transferred) */
-#define SPI_I2SCFGR_DATLEN_0                    ((uint16_t)0x0002) /* Bit 0 */
-#define SPI_I2SCFGR_DATLEN_1                    ((uint16_t)0x0004) /* Bit 1 */
-
-#define SPI_I2SCFGR_CKPOL                       ((uint16_t)0x0008) /* steady state clock polarity */
-
-#define SPI_I2SCFGR_I2SSTD                      ((uint16_t)0x0030) /* I2SSTD[1:0] bits (I2S standard selection) */
-#define SPI_I2SCFGR_I2SSTD_0                    ((uint16_t)0x0010) /* Bit 0 */
-#define SPI_I2SCFGR_I2SSTD_1                    ((uint16_t)0x0020) /* Bit 1 */
-
-#define SPI_I2SCFGR_PCMSYNC                     ((uint16_t)0x0080) /* PCM frame synchronization */
-
-#define SPI_I2SCFGR_I2SCFG                      ((uint16_t)0x0300) /* I2SCFG[1:0] bits (I2S configuration mode) */
-#define SPI_I2SCFGR_I2SCFG_0                    ((uint16_t)0x0100) /* Bit 0 */
-#define SPI_I2SCFGR_I2SCFG_1                    ((uint16_t)0x0200) /* Bit 1 */
-
-#define SPI_I2SCFGR_I2SE                        ((uint16_t)0x0400) /* I2S Enable */
-#define SPI_I2SCFGR_I2SMOD                      ((uint16_t)0x0800) /* I2S mode selection */
-
-/******************  Bit definition for SPI_I2SPR register  *******************/
-#define SPI_I2SPR_I2SDIV                        ((uint16_t)0x00FF) /* I2S Linear prescaler */
-#define SPI_I2SPR_ODD                           ((uint16_t)0x0100) /* Odd factor for the prescaler */
-#define SPI_I2SPR_MCKOE                         ((uint16_t)0x0200) /* Master Clock Output Enable */
+/******************  Bit definition for SPI_HSCR register  *****************/
+#define SPI_HSCR_HSRXEN                         ((uint16_t)0x0001) /* High Speed read mode enable */
 
 /******************************************************************************/
 /*                                    TIM                                     */
@@ -3208,7 +3186,7 @@ typedef struct
 /****************************  Enhanced register  *****************************/
 #define EXTEN_USBD_LS                           ((uint32_t)0x00000001) /* Bit 0 */
 #define EXTEN_USBD_PU_EN                        ((uint32_t)0x00000002) /* Bit 1 */
-#define EXTEN_USBHD_IO_EN                       ((uint32_t)0x00000004) /* Bit 2 */
+#define EXTEN_USBFS_IO_EN                       ((uint32_t)0x00000004) /* Bit 2 */
 #define EXTEN_USB_5V_SEL                        ((uint32_t)0x00000008) /* Bit 3 */
 #define EXTEN_PLL_HSI_PRE                       ((uint32_t)0x00000010) /* Bit 4 */
 #define EXTEN_LOCKUP_EN                         ((uint32_t)0x00000040) /* Bit 5 */
